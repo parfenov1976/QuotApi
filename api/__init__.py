@@ -3,6 +3,7 @@ from flask import Flask, request
 from flask_restful import Api, Resource, reqparse
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from flask_marshmallow import Marshmallow
 
 
 class UnicodeApi(Api):
@@ -18,3 +19,4 @@ app.config.from_object(Config)
 api = UnicodeApi(app)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+ma = Marshmallow(app)
