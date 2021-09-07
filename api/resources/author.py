@@ -10,7 +10,7 @@ class AuthorResource(Resource):
             return authors_schema.dump(authors), 200
 
         author = AuthorModel.query.get(author_id)
-        if author:
+        if not author:
             return f"Author id={author_id} not found", 404
 
         return author_schema.dump(author), 200
@@ -18,8 +18,9 @@ class AuthorResource(Resource):
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument("name", required=True)
+        parser.add_argument("surname", required=True)
         author_data = parser.parse_args()
-        author = AuthorModel(author_data["name"])
+        author = AuthorModel(author_data["name"], author_data["surname"])
         db.session.add(author)
         db.session.commit()
         return author_schema.dump(author), 201
@@ -27,13 +28,15 @@ class AuthorResource(Resource):
     def put(self, author_id):
         parser = reqparse.RequestParser()
         parser.add_argument("name", required=True)
+        parser.add_argument("surname", required=True)
         author_data = parser.parse_args()
         author = AuthorModel.query.get(author_id)
         if author is None:
-            author = AuthorModel(author_data["name"])
+            author = AuthorModel(author_data["name"], author_data["surname"])
             db.session.add(author)
             db.session.commit()
             return author_schema.dump(author), 201
         author.name = author_data["name"]
+        author.surname = author_data["surname"]
         db.session.commit()
         return author_schema.dump(author), 200
