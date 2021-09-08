@@ -8,3 +8,5 @@ marshmallow-sqlalchemy==0.26.1
 ipython
 gunicorn
 psycopg2-binary
+passlib==1.7.4
+Flask-HTTPAuth==4.4.0

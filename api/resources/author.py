@@ -1,4 +1,4 @@
-from api import Resource, reqparse, db
+from api import Resource, reqparse, db, auth, g, app
 from api.models.author import AuthorModel
 from api.schemas.author import author_schema, authors_schema
 
@@ -8,13 +8,12 @@ class AuthorResource(Resource):
         if author_id is None:
             authors = AuthorModel.query.all()
             return authors_schema.dump(authors), 200
-
         author = AuthorModel.query.get(author_id)
         if not author:
             return f"Author id={author_id} not found", 404
-
         return author_schema.dump(author), 200
 
+    @auth.login_required
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument("name", required=True)
@@ -38,5 +37,15 @@ class AuthorResource(Resource):
             return author_schema.dump(author), 201
         author.name = author_data["name"]
         author.surname = author_data["surname"]
+        db.session.commit()
+        return author_schema.dump(author), 200
+
+    def delete(self, author_id):
+        if author_id is None:
+            return "'author_id' is missing", 400
+        author = AuthorModel.query.get(author_id)
+        if not author:
+            return f"Author id={author_id} not found", 404
+        db.session.delete(author)
         db.session.commit()
         return author_schema.dump(author), 200
