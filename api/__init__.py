@@ -37,3 +37,8 @@ def verify_password(username_or_token, password):
             return False
     g.user = user
     return True
+
+
+@auth.get_user_roles
+def get_user_roles(user):
+    return g.user.get_roles()

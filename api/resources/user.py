@@ -8,8 +8,9 @@ class UserResource(Resource):
         parser = reqparse.RequestParser()
         parser.add_argument("username", required=True)
         parser.add_argument("password", required=True)
+        parser.add_argument("role")
         user_data = parser.parse_args()
-        user = UserModel(user_data["username"], user_data["password"])
+        user = UserModel(user_data["username"], user_data["password"], user_data["role"])
         db.session.add(user)
         db.session.commit()
         return user_schema.dump(user), 201
