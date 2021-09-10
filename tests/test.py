@@ -56,7 +56,6 @@ class TestUsers(TestCase):
         self.assertEqual(res.status_code, 404)
 
     def test_author_creation(self):
-
         authors_data = {
             "name": 'Alex',
             "surname": "Petroff"
@@ -73,6 +72,31 @@ class TestUsers(TestCase):
             "username": 'admin',
             'password': 'admin',
             'role': 'admin'
+        }
+
+        user = UserModel(**user_data)
+        user.save()
+        self.user = user
+        # "login:password" --> b64 --> 'ksjadhsadfh474=+d'
+        self.headers = {
+            'Authorization': 'Basic ' + b64encode(
+                f"{user_data['username']}:{user_data['password']}".encode('ascii')).decode('utf-8')
+        }
+
+    def test_author_creation_neg(self):
+        authors_data = {
+            "name": 'Alex',
+            "surname": "Petroff"
+        }
+        self.create_and_auth_user_neg()
+        res = self.client.post('/authors', headers=self.headers, data=authors_data)
+        self.assertEqual(res.status_code, 403)
+
+    def create_and_auth_user_neg(self):
+        user_data = {
+            "username": 'admin',
+            'password': 'admin',
+            'role': 'not admin'
         }
 
         user = UserModel(**user_data)
